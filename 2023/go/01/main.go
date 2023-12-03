@@ -66,8 +66,9 @@ func part_two(input []string) {
 				}
 			}
 		}
-		return ""
+		return "0"
 	}
+
 	for _, line := range input {
 		digits := findDigit(line, 0, len(line), 1) +
 			findDigit(line, len(line)-1, -1, -1)
