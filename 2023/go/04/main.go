@@ -65,10 +65,10 @@ func part_two(input []string) {
 		original_cards = append(original_cards, card{id: i + 1, winning: w, drawn: d})
 	}
 
-	result := len(original_cards)
+	result := 0
 	cards_to_inspect := original_cards[:]
 	var current_card card
-	for {
+	for ; ; result += 1 {
 		if len(cards_to_inspect) == 0 {
 			break
 		}
@@ -77,7 +77,9 @@ func part_two(input []string) {
 		count := count(w, d)
 		for i := id + 1; i <= id+count; i++ {
 			cards_to_inspect = append(cards_to_inspect, original_cards[i-1])
-			result += 1
+		}
+		if result == 20 {
+			break
 		}
 	}
 	fmt.Println(result)
