@@ -32,13 +32,6 @@ func part_one(input []string) {
 	fmt.Println(sum)
 }
 
-func min(a int, b int) int {
-	if a > b {
-		return b
-	}
-	return a
-}
-
 func part_two(input []string) {
 	sum := 0
 	digitWords := map[string]string{
