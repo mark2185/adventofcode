@@ -20,10 +20,6 @@ func mapParseInt(s string, _ int) int {
 	return parseInt(s)
 }
 
-func notEmpty(s string, _ int) bool {
-	return s != ""
-}
-
 func solveQuadratic(ai int, bi int, ci int) (float64, float64) {
 	a, b, c := float64(ai), float64(bi), float64(ci)
 	discriminant := b*b - 4*a*c
@@ -33,8 +29,8 @@ func solveQuadratic(ai int, bi int, ci int) (float64, float64) {
 }
 
 func part_one(input []string) {
-	times := lo.Map(lo.Filter(strings.Split(input[0], " ")[1:], notEmpty), mapParseInt)
-	distances := lo.Map(lo.Filter(strings.Split(input[1], " ")[1:], notEmpty), mapParseInt)
+	times := lo.Map(lo.WithoutEmpty(strings.Split(input[0], " ")[1:]), mapParseInt)
+	distances := lo.Map(lo.WithoutEmpty(strings.Split(input[1], " ")[1:]), mapParseInt)
 
 	result := 1
 	for i := 0; i < len(times); i++ {
