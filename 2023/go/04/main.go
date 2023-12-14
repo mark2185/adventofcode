@@ -28,10 +28,6 @@ func count(winning []string, drawn []string) int {
 	return count
 }
 
-func notEmpty(s string, _ int) bool {
-	return s != ""
-}
-
 func splitOnSpace(s string, _ int) []string {
 	return str.Split(s, " ")
 }
@@ -40,8 +36,8 @@ func part_one(input []string) {
 	score := 0
 	for _, cards := range lo.Map(input, func(line string, _ int) []string { return str.Split(str.Split(line, ": ")[1], "|") }) {
 		c := lo.Map(cards, splitOnSpace)
-		winning := lo.Filter(c[0], notEmpty)
-		drawn := lo.Filter(c[1], notEmpty)
+		winning := lo.WithoutEmpty(c[0])
+		drawn := lo.WithoutEmpty(c[1])
 		count := count(winning, drawn)
 		if count > 0 {
 			score += 1 << (count - 1)
@@ -60,8 +56,8 @@ func part_two(input []string) {
 	original_cards := []card{}
 	for i, cards := range lo.Map(input, func(l string, _ int) []string { return str.Split(str.Split(l, ": ")[1], "|") }) {
 		c := lo.Map(cards, splitOnSpace)
-		w := lo.Filter(c[0], notEmpty)
-		d := lo.Filter(c[1], notEmpty)
+		w := lo.WithoutEmpty(c[0])
+		d := lo.WithoutEmpty(c[1])
 		original_cards = append(original_cards, card{id: i + 1, winning: w, drawn: d})
 	}
 
