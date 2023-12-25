@@ -10,66 +10,20 @@ import (
 	"github.com/samber/lo"
 )
 
-type Validity int
-
-const (
-	NotValid Validity = iota
-	MaybeValid
-	Valid
-)
-
 func parseInt(line string, _ int) int {
 	n, _ := strconv.Atoi(line)
 	return n
 }
 
-func isEqual[T comparable](a []T, b []T) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
-}
-
-func validate(data string, nums []int) Validity {
-	if strings.Contains(data, "?") {
-		return MaybeValid
-	}
-
-	groups := lo.WithoutEmpty(strings.Split(data, "."))
-	lengths := lo.Map(groups, func(s string, _ int) int { return len(s) })
-	if isEqual(nums, lengths) {
-		return Valid
-	}
-	return NotValid
-}
-
-func bruteForce(data string, nums []int) int {
-	switch validate(data, nums) {
-	case NotValid:
-		return 0
-	case Valid:
-		return 1
-	}
-
-	sum := bruteForce(strings.Replace(data, "?", ".", 1), nums)
-	sum += bruteForce(strings.Replace(data, "?", "#", 1), nums)
-	return sum
-}
-
-func part_one(input []string) {
+func part_one(input []string) any {
 	sum := 0
 	for _, line := range input {
 		s := strings.Split(line, " ")
 		nums := lo.Map(strings.Split(s[1], ","), parseInt)
 
-		sum += bruteForce(s[0], nums)
+		sum += recursion(s[0], nums, 0, map[string]int{})
 	}
-	fmt.Println(sum)
+	return sum
 }
 
 func transformIntoKey(data string, counts []int) string {
@@ -88,7 +42,7 @@ func recursion(data string, expectedCounts []int, count int, memo map[string]int
 		return 1
 	}
 
-	if len(data) == 0 {
+	if data == "" {
 		return 0
 	}
 
@@ -101,11 +55,6 @@ func recursion(data string, expectedCounts []int, count int, memo map[string]int
 	case '#':
 		count++
 		expectedCount := expectedCounts[0]
-
-		// overshot
-		if count > expectedCount {
-			return 0
-		}
 
 		// not yet enough
 		if count < expectedCount {
@@ -121,7 +70,7 @@ func recursion(data string, expectedCounts []int, count int, memo map[string]int
 
 		// lagom, but we need to check if we reached the end of the sequence (or data)
 		if len(data) == 1 {
-			return recursion(data[1:], expectedCounts[1:], 0, memo)
+			return recursion("", expectedCounts[1:], 0, memo)
 		}
 
 		// this means the sequence is too long
@@ -135,7 +84,7 @@ func recursion(data string, expectedCounts []int, count int, memo map[string]int
 	return recursion(data[1:], expectedCounts, 0, memo)
 }
 
-func part_two(input []string) {
+func part_two(input []string) any {
 	sum := 0
 	for _, line := range input {
 		split := strings.Split(line, " ")
@@ -152,7 +101,7 @@ func part_two(input []string) {
 
 		sum += recursion(graphs, n, 0, map[string]int{})
 	}
-	fmt.Println(sum)
+	return sum
 }
 
 func main() {
