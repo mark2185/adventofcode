@@ -37,24 +37,18 @@ func (g *gridInfo) isInBounds(y int, x int) bool {
 	return 0 <= y && y < g.height && 0 <= x && x < g.width
 }
 
-// sort rocks so the order doesn't muck up hashing
-func sortRocks(rs rocks) rocks {
-	f := func(i int, j int) bool {
-		left := rs[i]
-		right := rs[j]
-		return left.x < right.x && left.y < right.y
-	}
-	sort.Slice(rs, f)
-	return rs
-}
-
 // squashing all rocks information into a string
 func (g *gridInfo) hash() string {
-	hash := ""
-	for _, r := range sortRocks(g.movableRocks) {
-		hash += fmt.Sprintf("x%dy%d|", r.x, r.y)
+	rs := groupRocks(north, g.movableRocks)
+	keys := lo.Keys(rs)
+	sort.Ints(keys)
+	var sb strings.Builder
+	for _, k := range keys {
+		for _, r := range rs[k] {
+			sb.WriteString(fmt.Sprintf("x%dy%d", r.x, r.y))
+		}
 	}
-	return hash
+	return sb.String()
 }
 
 type rockGroups map[int]rocks
@@ -129,8 +123,11 @@ func (g *gridInfo) tilt(d direction) *gridInfo {
 				case east:
 					nextX += 1
 				}
+				if !g.isInBounds(nextY, nextX) {
+					break
+				}
 				// another movable rock is there or the position is out of bounds
-				if lo.ContainsBy(rocksGroup[:i], f) || !g.isInBounds(nextY, nextX) {
+				if lo.ContainsBy(rocksGroup[:i], f) {
 					break
 				}
 				// an immovable rock is there
@@ -221,7 +218,7 @@ func part_two(input []string) any {
 }
 
 func main() {
-	content, err := os.ReadFile("sample.txt")
+	content, err := os.ReadFile("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
